@@ -13,7 +13,7 @@ type Game struct {
 	outputLines []string
 }
 
-func NexGame(cfg config.Config) (*Game, error) {
+func NewGame(cfg config.Config) (*Game, error) {
 	if err := validateConfig(cfg); err != nil {
 		return nil, err
 	}
