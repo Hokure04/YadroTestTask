@@ -23,8 +23,15 @@ func (player *Player) IsAlive() bool {
 func (player *Player) IsInDungeon() bool {
 	return player.Run != nil && !player.Run.Finished
 }
+
 func (player *Player) StartRun(startedAt time.Time) {
 	player.Run = NewRun(startedAt)
+}
+
+func (player *Player) FinishRun(state string, finishedAt time.Time) {
+	player.Run.State = state
+	player.Run.Finished = true
+	player.Run.FinishedAt = finishedAt
 }
 
 func (player *Player) KillMonster(monsterPerFloor int, eventTime time.Time) {

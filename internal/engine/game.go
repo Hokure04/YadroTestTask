@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"impulse/internal/config"
 	"impulse/internal/domain"
+	"time"
 )
 
 type Game struct {
@@ -40,4 +41,20 @@ func validateConfig(cfg config.Config) error {
 
 func (g *Game) OutputLines() []string {
 	return g.outputLines
+}
+
+func (g *Game) getPlayer(id int) *domain.Player {
+	player, ok := g.players[id]
+	if !ok {
+		player = domain.NewPlayer(id)
+		g.players[id] = player
+	}
+	return player
+}
+func (g *Game) CloseExpiredDungeons(currentTime time.Time) {
+	for _, player := range g.players {
+		if player.IsInDungeon() {
+			player.FinishRun(domain.Fail, time.Now())
+		}
+	}
 }
