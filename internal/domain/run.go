@@ -14,6 +14,7 @@ type Run struct {
 	FinishedAt time.Time
 	Finished   bool
 	Floor      FloorProgress
+	Boss       BossProgress
 }
 
 func NewRun(startedAt time.Time) *Run {
