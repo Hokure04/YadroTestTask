@@ -23,6 +23,10 @@ func (g *Game) CreateReport() []string {
 		averageTime := time.Duration(0)
 		bossKillTime := time.Duration(0)
 
+		if player.Disqualified {
+			state = domain.Disqual
+		}
+
 		if player.Run != nil {
 			state = player.Run.State
 
@@ -30,17 +34,13 @@ func (g *Game) CreateReport() []string {
 				totalTime = player.Run.FinishedAt.Sub(player.Run.StartedAt)
 			}
 
-			if len(player.Run.Floor.ClearDuration) > 0 {
-				var sum time.Duration
-				for _, duration := range player.Run.Floor.ClearDuration {
-					sum += duration
-				}
-
-				averageTime = sum / time.Duration(len(player.Run.Floor.ClearDuration))
+			if player.Run.Floor.ClearedFloors > 0 {
+				averageTime = player.Run.Floor.TotalClearDuration /
+					time.Duration(player.Run.Floor.ClearedFloors)
 			}
 
 			if player.Run.Boss.Killed {
-				bossKillTime = player.Run.Boss.KilledAt
+				bossKillTime = player.Run.Boss.KilledDuration
 			}
 		}
 

@@ -25,21 +25,8 @@ func (g *Game) processKillMonster(event domain.Event, player *domain.Player) {
 		return
 	}
 
-	floor := &player.Run.Floor
-	currentFloor := floor.CurrentFloor
-	floor.MonstersKilledCount[currentFloor]++
-
+	player.Run.Floor.KillMonster(g.config.Monsters, event.TimeEventHappen)
 	g.event(event.TimeEventHappen, "Player [%d] killed the monster", player.ID)
-
-	if floor.MonstersKilledCount[currentFloor] == g.config.Monsters {
-		floor.FloorCleared[currentFloor] = true
-		floor.ClearedFloors++
-		startedAt := floor.FloorStartedAt[currentFloor]
-		floor.ClearDuration = append(
-			floor.ClearDuration,
-			event.TimeEventHappen.Sub(startedAt),
-		)
-	}
 }
 
 func (g *Game) processNextFloor(event domain.Event, player *domain.Player) {
@@ -47,14 +34,7 @@ func (g *Game) processNextFloor(event domain.Event, player *domain.Player) {
 		return
 	}
 
-	floor := &player.Run.Floor
-	floor.CurrentFloor++
-
-	if floor.CurrentFloor <= g.config.Floors {
-		floor.MonstersKilledCount[floor.CurrentFloor] = 0
-		floor.FloorStartedAt[floor.CurrentFloor] = event.TimeEventHappen
-		floor.FloorCleared[floor.CurrentFloor] = false
-	}
+	player.Run.Floor.MoveNext(event.TimeEventHappen, g.config.Floors)
 
 	g.event(event.TimeEventHappen, "Player [%d] went to the next floor", player.ID)
 }
@@ -64,7 +44,7 @@ func (g *Game) processPreviousFloor(event domain.Event, player *domain.Player) {
 		return
 	}
 
-	player.Run.Floor.CurrentFloor--
+	player.Run.Floor.MovePrevious()
 	g.event(event.TimeEventHappen, "Player [%d] went to the previous floor", player.ID)
 }
 
@@ -73,9 +53,7 @@ func (g *Game) processEnterBossFloor(event domain.Event, player *domain.Player) 
 		return
 	}
 
-	player.Run.Boss.Entered = true
-	player.Run.Boss.EnteredAt = event.TimeEventHappen
-
+	player.Run.Boss.Enter(event.TimeEventHappen)
 	g.event(event.TimeEventHappen, "Player [%d] entered the boss's floor", player.ID)
 }
 
@@ -84,14 +62,12 @@ func (g *Game) processKillBoss(event domain.Event, player *domain.Player) {
 		return
 	}
 
-	player.Run.Boss.Killed = true
-	player.Run.Boss.KilledAt = event.TimeEventHappen.Sub(player.Run.Boss.EnteredAt)
-
+	player.Run.Boss.Kill(event.TimeEventHappen)
 	g.event(event.TimeEventHappen, "Player [%d] killed the boss", player.ID)
 }
 
 func (g *Game) processLeaveDungeon(event domain.Event, player *domain.Player) {
-	if g.reject(event, !g.canLeaveDungeon(player)) {
+	if g.reject(event, !g.canAct(player)) {
 		return
 	}
 

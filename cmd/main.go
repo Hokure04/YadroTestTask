@@ -22,19 +22,19 @@ func main() {
 
 	cfg, err := config.Read(configPath)
 	if err != nil {
-		fmt.Println(os.Stderr, "config error:", err)
+		fmt.Fprintln(os.Stderr, "config error:", err)
 		os.Exit(1)
 	}
 
 	events, err := parser.ReadEvents(eventsPath)
 	if err != nil {
-		fmt.Println(os.Stderr, "events error:", err)
+		fmt.Fprintln(os.Stderr, "events error:", err)
 		os.Exit(1)
 	}
 
 	game, err := engine.NewGame(cfg)
 	if err != nil {
-		fmt.Println(os.Stderr, "new game error:", err)
+		fmt.Fprintln(os.Stderr, "new game error:", err)
 		os.Exit(1)
 	}
 

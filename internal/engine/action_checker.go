@@ -12,55 +12,37 @@ func (g *Game) canEnterDungeon(event domain.Event, player *domain.Player) bool {
 }
 
 func (g *Game) canKillMonster(player *domain.Player) bool {
-	if !player.IsInDungeon() || !player.IsAlive() || player.Run.Boss.Entered {
+	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
 
-	currentFloor := player.Run.Floor.CurrentFloor
-
-	return currentFloor >= 1 &&
-		currentFloor <= g.config.Floors &&
-		!player.Run.Floor.FloorCleared[currentFloor] &&
-		player.Run.Floor.MonstersKilledCount[currentFloor] < g.config.Monsters
+	return player.Run.Floor.CanKillMonster(g.config.Floors, g.config.Monsters)
 }
 
 func (g *Game) canMoveNextFloor(player *domain.Player) bool {
-	if !player.IsInDungeon() || !player.IsAlive() || player.Run.Boss.Entered {
+	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
 
-	currentFloor := player.Run.Floor.CurrentFloor
-
-	return currentFloor >= 1 &&
-		currentFloor <= g.config.Floors &&
-		player.Run.Floor.FloorCleared[currentFloor]
+	return player.Run.Floor.CanMoveNext(g.config.Floors)
 }
 
 func (g *Game) canMovePreviousFloor(player *domain.Player) bool {
-	if !player.IsInDungeon() || !player.IsAlive() || player.Run.Boss.Entered {
+	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
-	return player.Run.Floor.CurrentFloor > 1
+	return player.Run.Floor.CanMovePrevious()
 }
 
 func (g *Game) canEnterBossFloor(player *domain.Player) bool {
-	if !player.IsInDungeon() || !player.IsAlive() || player.Run.Boss.Entered {
+	if !g.canAct(player) || !player.Run.Boss.CanEnter() {
 		return false
 	}
-
-	return player.Run.Floor.ClearedFloors >= g.config.Floors &&
-		player.Run.Floor.CurrentFloor == g.config.Floors+1
+	return player.Run.Floor.CanEnterBossFloor(g.config.Floors)
 }
 
 func (g *Game) canKillBoss(player *domain.Player) bool {
-	return player.IsInDungeon() &&
-		player.IsAlive() &&
-		player.Run.Boss.Entered &&
-		!player.Run.Boss.Killed
-}
-
-func (g *Game) canLeaveDungeon(player *domain.Player) bool {
-	return player.IsInDungeon() && player.IsAlive()
+	return g.canAct(player) && player.Run.Boss.CanKill()
 }
 
 func (g *Game) canAct(player *domain.Player) bool {

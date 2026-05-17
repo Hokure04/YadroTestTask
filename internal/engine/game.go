@@ -34,11 +34,11 @@ func NewGame(cfg config.Config) (*Game, error) {
 }
 
 func validateConfig(cfg config.Config) error {
-	if cfg.Floors < 0 {
+	if cfg.Floors <= 0 {
 		return fmt.Errorf("invalid floors: %d", cfg.Floors)
 	}
 
-	if cfg.Monsters < 0 {
+	if cfg.Monsters <= 0 {
 		return fmt.Errorf("invalid monsters: %d", cfg.Monsters)
 	}
 
@@ -65,27 +65,22 @@ func (g *Game) CloseExpiredDungeons(currentTime time.Time) {
 	if currentTime.Before(g.closeAt) {
 		return
 	}
-
-	for _, player := range g.players {
-		if player.IsInDungeon() {
-			state := domain.Fail
-			if g.isDungeonCompleted(player) {
-				state = domain.Success
-			}
-
-			player.FinishRun(state, g.closeAt)
-		}
-	}
+	g.finishOpenRuns(g.closeAt)
 }
 
 func (g *Game) FinishOpenRuns() {
+	g.finishOpenRuns(g.closeAt)
+}
+
+func (g *Game) finishOpenRuns(finishedAt time.Time) {
 	for _, player := range g.players {
 		if player.IsInDungeon() {
 			state := domain.Fail
 			if g.isDungeonCompleted(player) {
 				state = domain.Success
 			}
-			player.FinishRun(state, g.closeAt)
+
+			player.FinishRun(state, finishedAt)
 		}
 	}
 }
