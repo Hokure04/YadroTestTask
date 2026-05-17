@@ -29,9 +29,3 @@ func NewRun(startedAt time.Time) *Run {
 		},
 	}
 }
-
-func (r *Run) Finish(state string, finishedAt time.Time) {
-	r.State = state
-	r.Finished = true
-	r.FinishedAt = finishedAt
-}

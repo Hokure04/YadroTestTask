@@ -90,21 +90,9 @@ func (g *Game) FinishOpenRuns() {
 	}
 }
 
-func (g *Game) monsterFloorCount() int {
-	if g.config.Floors <= 1 {
-		return 0
-	}
-	return g.config.Floors - 1
-}
-
-func (g *Game) isBossFloor(player *domain.Player) bool {
-	return player.Run.Floor.CurrentFloor == g.config.Floors
-}
-
 func (g *Game) isDungeonCompleted(player *domain.Player) bool {
 	if player.Run == nil {
 		return false
 	}
-
-	return player.Run.Floor.ClearedFloors >= g.monsterFloorCount() && player.Run.Boss.Killed
+	return player.Run.Floor.ClearedFloors >= g.config.Floors && player.Run.Boss.Killed
 }

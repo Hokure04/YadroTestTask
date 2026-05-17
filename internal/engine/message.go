@@ -13,10 +13,5 @@ func (g *Game) event(eventTime time.Time, format string, args ...any) {
 }
 
 func (g *Game) impossible(event domain.Event) {
-	g.event(
-		event.TimeEventHappen,
-		"Player [%d] makes imposible move [%d]",
-		event.PlayerID,
-		event.EventID,
-	)
+	g.event(event.TimeEventHappen, "Player [%d] makes imposible move [%d]", event.PlayerID, event.EventID)
 }

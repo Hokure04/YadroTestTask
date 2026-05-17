@@ -38,28 +38,13 @@ func (player *Player) FinishRun(state string, finishedAt time.Time) {
 	player.Run.FinishedAt = finishedAt
 }
 
-/*func (player *Player) KillMonster(monsterPerFloor int, eventTime time.Time) {
-	floor := &player.Run.Floor
-	floor.MonstersKilledCount++
-
-	if floor.MonstersKilledCount >= monsterPerFloor {
-		floor.FloorCleared = true
-		floor.ClearedFloors++
+func (player *Player) ReceiveDamage(damage int) {
+	player.HP -= damage
+	if player.HP < 0 {
+		player.HP = 0
 	}
 }
 
-func (player Player) MoveToNextFloor(eventTime time.Time) {
-	floor := &player.Run.Floor
-
-	floor.CurrentFloor++
-	floor.MonstersKilledCount = 0
-	floor.FloorCleared = false
-	floor.FloorStartedAt = eventTime
-}*/
-
-func (player *Player) RecieveDamage(damage int) {
-	player.HP -= damage
-}
 func (player *Player) RestoreHealth(health int) {
 	player.HP += health
 	if player.HP > 100 {
