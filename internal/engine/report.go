@@ -40,7 +40,7 @@ func (g *Game) CreateReport() []string {
 			}
 
 			if player.Run.Boss.Killed {
-				bossKillTime = player.Run.Boss.KilledDuration
+				bossKillTime = player.Run.Boss.KillDuration
 			}
 		}
 

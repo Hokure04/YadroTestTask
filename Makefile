@@ -15,5 +15,11 @@ build:
 start: build
 	@./bin/$(APP_NAME) $(CONFIG_PATH) $(EVENTS_PATH)
 
+test:
+	@go test ./...
+
+test-v:
+	@go test -v ./...
+
 clean:
 	@rm -rf bin
