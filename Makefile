@@ -3,10 +3,10 @@ export PROJECT_ROOT=$(shell pwd)
 APP_NAME=impulse
 CMD_PATH=./cmd
 CONFIG_PATH=config.json
-EVENTS=events
+EVENTS_PATH=events
 
 run:
-	@go run $(CMD_PATH) $(CONFIG_PATH) $(EVENT_PATH)
+	@go run $(CMD_PATH) $(CONFIG_PATH) $(EVENTS_PATH)
 
 build:
 	@mkdir -p bin

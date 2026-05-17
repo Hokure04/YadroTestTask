@@ -6,10 +6,12 @@ func (g *Game) ProcessEvent(event domain.Event) {
 	player := g.getPlayer(event.PlayerID)
 
 	if player.Disqualified {
+		g.impossible(event)
 		return
 	}
 
 	if player.Run != nil && player.Run.Finished {
+		g.impossible(event)
 		return
 	}
 
@@ -44,7 +46,7 @@ func (g *Game) ProcessEvent(event domain.Event) {
 	case domain.RestoreHealth:
 		g.processRestoreHealth(event, player)
 	case domain.ReceiveDamage:
-		g.processRecieveDamage(event, player)
+		g.processReceiveDamage(event, player)
 	default:
 		g.impossible(event)
 	}

@@ -20,7 +20,7 @@ func NewGame(cfg config.Config) (*Game, error) {
 		return nil, err
 	}
 
-	openAt, err := time.Parse("15:04:04", cfg.OpenAt)
+	openAt, err := time.Parse("15:04:05", cfg.OpenAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse open at: %w", err)
 	}

@@ -43,11 +43,13 @@ func main() {
 		game.ProcessEvent(event)
 	}
 
+	game.FinishOpenRuns()
+
 	for _, line := range game.OutputLines() {
 		fmt.Println(line)
 	}
 
-	fmt.Println("report:")
+	fmt.Println("Final report:")
 	for _, line := range game.CreateReport() {
 		fmt.Println(line)
 	}
