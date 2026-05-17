@@ -11,6 +11,8 @@ type Game struct {
 	config      config.Config
 	players     map[int]*domain.Player
 	outputLines []string
+	openAt      time.Time
+	closeAt     time.Time
 }
 
 func NewGame(cfg config.Config) (*Game, error) {
@@ -18,9 +20,16 @@ func NewGame(cfg config.Config) (*Game, error) {
 		return nil, err
 	}
 
+	openAt, err := time.Parse("15:04:04", cfg.OpenAt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse open at: %w", err)
+	}
+
 	return &Game{
 		config:  cfg,
 		players: make(map[int]*domain.Player),
+		openAt:  openAt,
+		closeAt: openAt.Add(time.Duration(cfg.Duration) * time.Hour),
 	}, nil
 }
 
@@ -33,7 +42,7 @@ func validateConfig(cfg config.Config) error {
 		return fmt.Errorf("invalid monsters: %d", cfg.Monsters)
 	}
 
-	if cfg.Duration < 0 {
+	if cfg.Duration <= 0 {
 		return fmt.Errorf("invalid duration: %d", cfg.Duration)
 	}
 	return nil
@@ -51,10 +60,51 @@ func (g *Game) getPlayer(id int) *domain.Player {
 	}
 	return player
 }
+
 func (g *Game) CloseExpiredDungeons(currentTime time.Time) {
+	if currentTime.Before(g.closeAt) {
+		return
+	}
+
 	for _, player := range g.players {
 		if player.IsInDungeon() {
-			player.FinishRun(domain.Fail, time.Now())
+			state := domain.Fail
+			if g.isDungeonCompleted(player) {
+				state = domain.Success
+			}
+
+			player.FinishRun(state, g.closeAt)
 		}
 	}
+}
+
+func (g *Game) FinishOpenRuns() {
+	for _, player := range g.players {
+		if player.IsInDungeon() {
+			state := domain.Fail
+			if g.isDungeonCompleted(player) {
+				state = domain.Success
+			}
+			player.FinishRun(state, g.closeAt)
+		}
+	}
+}
+
+func (g *Game) monsterFloorCount() int {
+	if g.config.Floors <= 1 {
+		return 0
+	}
+	return g.config.Floors - 1
+}
+
+func (g *Game) isBossFloor(player *domain.Player) bool {
+	return player.Run.Floor.CurrentFloor == g.config.Floors
+}
+
+func (g *Game) isDungeonCompleted(player *domain.Player) bool {
+	if player.Run == nil {
+		return false
+	}
+
+	return player.Run.Floor.ClearedFloors >= g.monsterFloorCount() && player.Run.Boss.Killed
 }

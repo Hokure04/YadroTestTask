@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	fmt.Println("report:")
-	for _, line := range game.FinalReport() {
+	for _, line := range game.CreateReport() {
 		fmt.Println(line)
 	}
 }

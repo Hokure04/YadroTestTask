@@ -35,6 +35,10 @@ func ReadEvents(path string) ([]domain.Event, error) {
 		}
 		events = append(events, event)
 	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
 	return events, nil
 }
 
@@ -45,7 +49,11 @@ func ParseEvent(line string) (domain.Event, error) {
 		return domain.Event{}, errors.New("Invalid event")
 	}
 
-	time := time.Now()
+	rawTime := strings.Trim(fields[0], "[]")
+	eventTime, err := time.Parse("15:04:05", rawTime)
+	if err != nil {
+		return domain.Event{}, fmt.Errorf("Error parsing event time: %s", fields[0])
+	}
 
 	playerID, err := strconv.Atoi(fields[1])
 	if err != nil {
@@ -57,9 +65,15 @@ func ParseEvent(line string) (domain.Event, error) {
 		return domain.Event{}, fmt.Errorf("Invalid event ID: %s", fields[2])
 	}
 
+	extraParam := ""
+	if len(fields) > 3 {
+		extraParam = strings.Join(fields[3:], " ")
+	}
+
 	return domain.Event{
-		TimeEventHappen: time,
+		TimeEventHappen: eventTime,
 		PlayerID:        playerID,
 		EventID:         eventID,
+		ExtraParam:      extraParam,
 	}, nil
 }

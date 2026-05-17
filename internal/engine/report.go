@@ -3,15 +3,17 @@ package engine
 import (
 	"fmt"
 	"impulse/internal/domain"
+	"sort"
 	"time"
 )
 
-func (g *Game) FinalReport() []string {
+func (g *Game) CreateReport() []string {
 	playersId := make([]int, 0, len(g.players))
 	for player := range g.players {
 		playersId = append(playersId, player)
 	}
 
+	sort.Ints(playersId)
 	report := make([]string, 0, len(playersId))
 
 	for _, id := range playersId {
@@ -28,6 +30,15 @@ func (g *Game) FinalReport() []string {
 				totalTime = player.Run.FinishedAt.Sub(player.Run.StartedAt)
 			}
 
+			if len(player.Run.Floor.ClearDuration) > 0 {
+				var sum time.Duration
+				for _, duration := range player.Run.Floor.ClearDuration {
+					sum += duration
+				}
+
+				averageTime = sum / time.Duration(len(player.Run.Floor.ClearDuration))
+			}
+
 			if player.Run.Boss.Killed {
 				bossKillTime = player.Run.Boss.KilledAt
 			}
@@ -37,13 +48,22 @@ func (g *Game) FinalReport() []string {
 			"[%s] %d [%s, %s, %s] HP:%d",
 			state,
 			player.ID,
-			totalTime,
-			averageTime,
-			bossKillTime,
+			formatDuration(totalTime),
+			formatDuration(averageTime),
+			formatDuration(bossKillTime),
 			player.HP,
 		)
 
 		report = append(report, line)
 	}
 	return report
+}
+
+func formatDuration(duration time.Duration) string {
+	totalSeconds := int(duration.Seconds())
+
+	hours := totalSeconds / 3600
+	minutes := totalSeconds % 3600 / 60
+	seconds := totalSeconds % 60
+	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }

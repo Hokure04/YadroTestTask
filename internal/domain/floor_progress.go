@@ -4,8 +4,9 @@ import "time"
 
 type FloorProgress struct {
 	CurrentFloor        int
-	MonstersKilledCount int
-	FloorStartedAt      time.Time
-	FloorCleared        bool
+	MonstersKilledCount map[int]int
+	FloorStartedAt      map[int]time.Time
+	FloorCleared        map[int]bool
 	ClearedFloors       int
+	ClearDuration       []time.Duration
 }

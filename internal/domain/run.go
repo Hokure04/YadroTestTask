@@ -19,10 +19,13 @@ type Run struct {
 
 func NewRun(startedAt time.Time) *Run {
 	return &Run{
-		State:     Success,
+		State:     Fail,
 		StartedAt: startedAt,
 		Floor: FloorProgress{
-			CurrentFloor: 1,
+			CurrentFloor:        1,
+			MonstersKilledCount: map[int]int{1: 0},
+			FloorStartedAt:      map[int]time.Time{1: startedAt},
+			FloorCleared:        make(map[int]bool),
 		},
 	}
 }

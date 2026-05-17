@@ -3,10 +3,11 @@ package domain
 import "time"
 
 type Player struct {
-	ID         int
-	HP         int
-	Registered bool
-	Run        *Run
+	ID           int
+	HP           int
+	Registered   bool
+	Disqualified bool
+	Run          *Run
 }
 
 func NewPlayer(id int) *Player {
@@ -29,6 +30,9 @@ func (player *Player) StartRun(startedAt time.Time) {
 }
 
 func (player *Player) FinishRun(state string, finishedAt time.Time) {
+	if player.Run == nil || player.Run.Finished {
+		return
+	}
 	player.Run.State = state
 	player.Run.Finished = true
 	player.Run.FinishedAt = finishedAt

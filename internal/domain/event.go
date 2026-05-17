@@ -20,4 +20,5 @@ type Event struct {
 	TimeEventHappen time.Time
 	PlayerID        int
 	EventID         int
+	ExtraParam      string
 }
