@@ -10,10 +10,13 @@ type Player struct {
 	Run          *Run
 }
 
+const minHealth = 0
+const maxHealth = 100
+
 func NewPlayer(id int) *Player {
 	return &Player{
 		ID: id,
-		HP: 100,
+		HP: maxHealth,
 	}
 }
 
@@ -29,7 +32,7 @@ func (player *Player) StartRun(startedAt time.Time) {
 	player.Run = NewRun(startedAt)
 }
 
-func (player *Player) FinishRun(state string, finishedAt time.Time) {
+func (player *Player) FinishRun(state Result, finishedAt time.Time) {
 	if player.Run == nil || player.Run.Finished {
 		return
 	}
@@ -40,14 +43,14 @@ func (player *Player) FinishRun(state string, finishedAt time.Time) {
 
 func (player *Player) ReceiveDamage(damage int) {
 	player.HP -= damage
-	if player.HP < 0 {
-		player.HP = 0
+	if player.HP < minHealth {
+		player.HP = minHealth
 	}
 }
 
 func (player *Player) RestoreHealth(health int) {
 	player.HP += health
-	if player.HP > 100 {
-		player.HP = 100
+	if player.HP > maxHealth {
+		player.HP = maxHealth
 	}
 }

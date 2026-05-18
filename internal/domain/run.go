@@ -2,14 +2,16 @@ package domain
 
 import "time"
 
+type Result string
+
 const (
-	Success = "SUCCESS"
-	Fail    = "FAIL"
-	Disqual = "DISQUAL"
+	Success Result = "SUCCESS"
+	Fail    Result = "FAIL"
+	Disqual Result = "DISQUAL"
 )
 
 type Run struct {
-	State      string
+	State      Result
 	StartedAt  time.Time
 	FinishedAt time.Time
 	Finished   bool
