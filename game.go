@@ -1,21 +1,19 @@
-package engine
+package main
 
 import (
 	"fmt"
-	"impulse/internal/config"
-	"impulse/internal/domain"
 	"time"
 )
 
 type Game struct {
-	config      config.Config
-	players     map[int]*domain.Player
+	config      Config
+	players     map[int]*Player
 	outputLines []string
 	openAt      time.Time
 	closeAt     time.Time
 }
 
-func NewGame(cfg config.Config) (*Game, error) {
+func NewGame(cfg Config) (*Game, error) {
 	if err := validateConfig(cfg); err != nil {
 		return nil, err
 	}
@@ -27,13 +25,13 @@ func NewGame(cfg config.Config) (*Game, error) {
 
 	return &Game{
 		config:  cfg,
-		players: make(map[int]*domain.Player),
+		players: make(map[int]*Player),
 		openAt:  openAt,
 		closeAt: openAt.Add(time.Duration(cfg.Duration) * time.Hour),
 	}, nil
 }
 
-func validateConfig(cfg config.Config) error {
+func validateConfig(cfg Config) error {
 	if cfg.Floors <= 0 {
 		return fmt.Errorf("invalid floors: %d", cfg.Floors)
 	}
@@ -52,10 +50,10 @@ func (g *Game) OutputLines() []string {
 	return g.outputLines
 }
 
-func (g *Game) getPlayer(id int) *domain.Player {
+func (g *Game) getPlayer(id int) *Player {
 	player, ok := g.players[id]
 	if !ok {
-		player = domain.NewPlayer(id)
+		player = NewPlayer(id)
 		g.players[id] = player
 	}
 	return player
@@ -75,9 +73,9 @@ func (g *Game) FinishOpenRuns() {
 func (g *Game) finishOpenRuns(finishedAt time.Time) {
 	for _, player := range g.players {
 		if player.IsInDungeon() {
-			state := domain.Fail
+			state := Fail
 			if g.isDungeonCompleted(player) {
-				state = domain.Success
+				state = Success
 			}
 
 			player.FinishRun(state, finishedAt)
@@ -85,7 +83,7 @@ func (g *Game) finishOpenRuns(finishedAt time.Time) {
 	}
 }
 
-func (g *Game) isDungeonCompleted(player *domain.Player) bool {
+func (g *Game) isDungeonCompleted(player *Player) bool {
 	if player.Run == nil {
 		return false
 	}

@@ -1,8 +1,6 @@
-package engine
+package main
 
-import "impulse/internal/domain"
-
-func (g *Game) ProcessEvent(event domain.Event) {
+func (g *Game) ProcessEvent(event Event) {
 	player := g.getPlayer(event.PlayerID)
 
 	if player.Disqualified {
@@ -15,7 +13,7 @@ func (g *Game) ProcessEvent(event domain.Event) {
 		return
 	}
 
-	if event.EventID == domain.Register {
+	if event.EventID == Register {
 		g.processRegister(event, player)
 		return
 	}
@@ -27,25 +25,25 @@ func (g *Game) ProcessEvent(event domain.Event) {
 	}
 
 	switch event.EventID {
-	case domain.EnterDungeon:
+	case EnterDungeon:
 		g.processEnterDungeon(event, player)
-	case domain.KillMonster:
+	case KillMonster:
 		g.processKillMonster(event, player)
-	case domain.NextFloor:
+	case NextFloor:
 		g.processNextFloor(event, player)
-	case domain.PreviousFloor:
+	case PreviousFloor:
 		g.processPreviousFloor(event, player)
-	case domain.EnterBossFloor:
+	case EnterBossFloor:
 		g.processEnterBossFloor(event, player)
-	case domain.KillBoss:
+	case KillBoss:
 		g.processKillBoss(event, player)
-	case domain.LeaveDungeon:
+	case LeaveDungeon:
 		g.processLeaveDungeon(event, player)
-	case domain.CannotContinue:
+	case CannotContinue:
 		g.processCannotContinue(event, player)
-	case domain.RestoreHealth:
+	case RestoreHealth:
 		g.processRestoreHealth(event, player)
-	case domain.ReceiveDamage:
+	case ReceiveDamage:
 		g.processReceiveDamage(event, player)
 	default:
 		g.impossible(event)

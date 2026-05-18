@@ -1,8 +1,7 @@
-package engine
+package main
 
 import (
 	"fmt"
-	"impulse/internal/domain"
 	"sort"
 	"time"
 )
@@ -18,13 +17,13 @@ func (g *Game) CreateReport() []string {
 
 	for _, id := range playersId {
 		player := g.players[id]
-		state := domain.Fail
+		state := Fail
 		totalTime := time.Duration(0)
 		averageTime := time.Duration(0)
 		bossKillTime := time.Duration(0)
 
 		if player.Disqualified {
-			state = domain.Disqual
+			state = Disqual
 		}
 
 		if player.Run != nil {

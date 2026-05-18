@@ -1,15 +1,14 @@
-package tests
+package main
 
 import (
-	"impulse/internal/domain"
 	"testing"
 )
 
 func TestUnregisteredPlayerIsDisqualified(t *testing.T) {
 	game := newTestGame(t)
 
-	events := []domain.Event{
-		event(t, "14:10:00", 3, domain.KillMonster),
+	events := []Event{
+		event(t, "14:10:00", 3, KillMonster),
 	}
 
 	runEvents(game, events)
@@ -26,12 +25,12 @@ func TestUnregisteredPlayerIsDisqualified(t *testing.T) {
 
 func TestHealthRestoreAndDeath(t *testing.T) {
 	game := newTestGame(t)
-	events := []domain.Event{
-		event(t, "14:00:00", 1, domain.Register),
-		event(t, "14:10:00", 1, domain.EnterDungeon),
-		event(t, "14:12:00", 1, domain.ReceiveDamage, "60"),
-		event(t, "14:13:00", 1, domain.RestoreHealth, "80"),
-		event(t, "14:20:00", 1, domain.ReceiveDamage, "100"),
+	events := []Event{
+		event(t, "14:00:00", 1, Register),
+		event(t, "14:10:00", 1, EnterDungeon),
+		event(t, "14:12:00", 1, ReceiveDamage, "60"),
+		event(t, "14:13:00", 1, RestoreHealth, "80"),
+		event(t, "14:20:00", 1, ReceiveDamage, "100"),
 	}
 
 	runEvents(game, events)
@@ -55,10 +54,10 @@ func TestHealthRestoreAndDeath(t *testing.T) {
 
 func TestImpossibleToMove(t *testing.T) {
 	game := newTestGame(t)
-	events := []domain.Event{
-		event(t, "14:00:00", 1, domain.Register),
-		event(t, "14:10:00", 1, domain.EnterDungeon),
-		event(t, "14:11:00", 1, domain.NextFloor),
+	events := []Event{
+		event(t, "14:00:00", 1, Register),
+		event(t, "14:10:00", 1, EnterDungeon),
+		event(t, "14:11:00", 1, NextFloor),
 	}
 
 	runEvents(game, events)

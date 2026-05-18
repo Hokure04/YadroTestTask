@@ -1,24 +1,23 @@
-package parser
+package main
 
 import (
 	"bufio"
 	"errors"
 	"fmt"
-	"impulse/internal/domain"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func ReadEvents(path string) ([]domain.Event, error) {
+func ReadEvents(path string) ([]Event, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var events []domain.Event
+	var events []Event
 	scanner := bufio.NewScanner(file)
 	lineNumber := 0
 
@@ -42,27 +41,27 @@ func ReadEvents(path string) ([]domain.Event, error) {
 	return events, nil
 }
 
-func ParseEvent(line string) (domain.Event, error) {
+func ParseEvent(line string) (Event, error) {
 	fields := strings.Fields(line)
 
 	if len(fields) < 3 {
-		return domain.Event{}, errors.New("invalid event")
+		return Event{}, errors.New("invalid event")
 	}
 
 	rawTime := strings.Trim(fields[0], "[]")
 	eventTime, err := time.Parse("15:04:05", rawTime)
 	if err != nil {
-		return domain.Event{}, fmt.Errorf("error parsing event time: %s", fields[0])
+		return Event{}, fmt.Errorf("error parsing event time: %s", fields[0])
 	}
 
 	playerID, err := strconv.Atoi(fields[1])
 	if err != nil {
-		return domain.Event{}, fmt.Errorf("invalid player ID: %s", fields[1])
+		return Event{}, fmt.Errorf("invalid player ID: %s", fields[1])
 	}
 
 	eventID, err := strconv.Atoi(fields[2])
 	if err != nil {
-		return domain.Event{}, fmt.Errorf("invalid event ID: %s", fields[2])
+		return Event{}, fmt.Errorf("invalid event ID: %s", fields[2])
 	}
 
 	extraParam := ""
@@ -70,7 +69,7 @@ func ParseEvent(line string) (domain.Event, error) {
 		extraParam = strings.Join(fields[3:], " ")
 	}
 
-	return domain.Event{
+	return Event{
 		TimeEventHappen: eventTime,
 		PlayerID:        playerID,
 		EventID:         eventID,

@@ -1,8 +1,6 @@
-package engine
+package main
 
-import "impulse/internal/domain"
-
-func (g *Game) processRegister(event domain.Event, player *domain.Player) {
+func (g *Game) processRegister(event Event, player *Player) {
 	if g.reject(event, player.Registered || player.Run != nil) {
 		return
 	}
@@ -11,7 +9,7 @@ func (g *Game) processRegister(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] registered", player.ID)
 }
 
-func (g *Game) processEnterDungeon(event domain.Event, player *domain.Player) {
+func (g *Game) processEnterDungeon(event Event, player *Player) {
 	if g.reject(event, !g.canEnterDungeon(event, player)) {
 		return
 	}
@@ -20,7 +18,7 @@ func (g *Game) processEnterDungeon(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] entered the dungeon", player.ID)
 }
 
-func (g *Game) processKillMonster(event domain.Event, player *domain.Player) {
+func (g *Game) processKillMonster(event Event, player *Player) {
 	if g.reject(event, !g.canKillMonster(player)) {
 		return
 	}
@@ -29,7 +27,7 @@ func (g *Game) processKillMonster(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] killed the monster", player.ID)
 }
 
-func (g *Game) processNextFloor(event domain.Event, player *domain.Player) {
+func (g *Game) processNextFloor(event Event, player *Player) {
 	if g.reject(event, !g.canMoveNextFloor(player)) {
 		return
 	}
@@ -39,7 +37,7 @@ func (g *Game) processNextFloor(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] went to the next floor", player.ID)
 }
 
-func (g *Game) processPreviousFloor(event domain.Event, player *domain.Player) {
+func (g *Game) processPreviousFloor(event Event, player *Player) {
 	if g.reject(event, !g.canMovePreviousFloor(player)) {
 		return
 	}
@@ -48,7 +46,7 @@ func (g *Game) processPreviousFloor(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] went to the previous floor", player.ID)
 }
 
-func (g *Game) processEnterBossFloor(event domain.Event, player *domain.Player) {
+func (g *Game) processEnterBossFloor(event Event, player *Player) {
 	if g.reject(event, !g.canEnterBossFloor(player)) {
 		return
 	}
@@ -57,7 +55,7 @@ func (g *Game) processEnterBossFloor(event domain.Event, player *domain.Player) 
 	g.event(event.TimeEventHappen, "Player [%d] entered the boss's floor", player.ID)
 }
 
-func (g *Game) processKillBoss(event domain.Event, player *domain.Player) {
+func (g *Game) processKillBoss(event Event, player *Player) {
 	if g.reject(event, !g.canKillBoss(player)) {
 		return
 	}
@@ -66,32 +64,32 @@ func (g *Game) processKillBoss(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] killed the boss", player.ID)
 }
 
-func (g *Game) processLeaveDungeon(event domain.Event, player *domain.Player) {
+func (g *Game) processLeaveDungeon(event Event, player *Player) {
 	if g.reject(event, !g.canAct(player)) {
 		return
 	}
 
-	state := domain.Fail
+	state := Fail
 	if g.isDungeonCompleted(player) {
-		state = domain.Success
+		state = Success
 	}
 
 	player.FinishRun(state, event.TimeEventHappen)
 	g.event(event.TimeEventHappen, "Player [%d] left the dungeon", player.ID)
 }
 
-func (g *Game) processCannotContinue(event domain.Event, player *domain.Player) {
+func (g *Game) processCannotContinue(event Event, player *Player) {
 	if g.reject(event, !g.canAct(player)) {
 		return
 	}
 
-	player.FinishRun(domain.Disqual, event.TimeEventHappen)
+	player.FinishRun(Disqual, event.TimeEventHappen)
 	player.Disqualified = true
 
 	g.event(event.TimeEventHappen, "Player [%d] cannot continue due to [%s]", player.ID, event.ExtraParam)
 }
 
-func (g *Game) processRestoreHealth(event domain.Event, player *domain.Player) {
+func (g *Game) processRestoreHealth(event Event, player *Player) {
 	if g.reject(event, !g.canAct(player)) {
 		return
 	}
@@ -105,7 +103,7 @@ func (g *Game) processRestoreHealth(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] has restored [%d] of health", player.ID, health)
 }
 
-func (g *Game) processReceiveDamage(event domain.Event, player *domain.Player) {
+func (g *Game) processReceiveDamage(event Event, player *Player) {
 	if g.reject(event, !g.canAct(player)) {
 		return
 	}
@@ -119,7 +117,7 @@ func (g *Game) processReceiveDamage(event domain.Event, player *domain.Player) {
 	g.event(event.TimeEventHappen, "Player [%d] recieved [%d] of damage", player.ID, damage)
 
 	if !player.IsAlive() {
-		player.FinishRun(domain.Fail, event.TimeEventHappen)
+		player.FinishRun(Fail, event.TimeEventHappen)
 		g.event(event.TimeEventHappen, "Player [%d] is dead", player.ID)
 	}
 }

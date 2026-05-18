@@ -1,12 +1,11 @@
-package tests
+package main
 
 import (
-	"impulse/internal/parser"
 	"testing"
 )
 
 func TestParseEventWithExtraParam(t *testing.T) {
-	event, err := parser.ParseEvent("[14:10:15] 42 9 out of strength")
+	event, err := ParseEvent("[14:10:15] 42 9 out of strength")
 	if err != nil {
 		t.Fatalf("error parsing event: %v", err)
 	}
@@ -29,7 +28,7 @@ func TestParseEventWithExtraParam(t *testing.T) {
 }
 
 func TestParseEventInvalidFormat(t *testing.T) {
-	_, err := parser.ParseEvent("[14:10:15] 42")
+	_, err := ParseEvent("[14:10:15] 42")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

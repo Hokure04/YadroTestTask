@@ -1,17 +1,16 @@
-package engine
+package main
 
 import (
-	"impulse/internal/domain"
 	"strconv"
 )
 
-func (g *Game) canEnterDungeon(event domain.Event, player *domain.Player) bool {
+func (g *Game) canEnterDungeon(event Event, player *Player) bool {
 	return !player.IsInDungeon() &&
 		!event.TimeEventHappen.Before(g.openAt) &&
 		event.TimeEventHappen.Before(g.closeAt)
 }
 
-func (g *Game) canKillMonster(player *domain.Player) bool {
+func (g *Game) canKillMonster(player *Player) bool {
 	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
@@ -19,7 +18,7 @@ func (g *Game) canKillMonster(player *domain.Player) bool {
 	return player.Run.Floor.CanKillMonster(g.config.Floors, g.config.Monsters)
 }
 
-func (g *Game) canMoveNextFloor(player *domain.Player) bool {
+func (g *Game) canMoveNextFloor(player *Player) bool {
 	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
@@ -27,29 +26,29 @@ func (g *Game) canMoveNextFloor(player *domain.Player) bool {
 	return player.Run.Floor.CanMoveNext(g.config.Floors)
 }
 
-func (g *Game) canMovePreviousFloor(player *domain.Player) bool {
+func (g *Game) canMovePreviousFloor(player *Player) bool {
 	if !g.canAct(player) || player.Run.Boss.Entered {
 		return false
 	}
 	return player.Run.Floor.CanMovePrevious()
 }
 
-func (g *Game) canEnterBossFloor(player *domain.Player) bool {
+func (g *Game) canEnterBossFloor(player *Player) bool {
 	if !g.canAct(player) || !player.Run.Boss.CanEnter() {
 		return false
 	}
 	return player.Run.Floor.CanEnterBossFloor(g.config.Floors)
 }
 
-func (g *Game) canKillBoss(player *domain.Player) bool {
+func (g *Game) canKillBoss(player *Player) bool {
 	return g.canAct(player) && player.Run.Boss.CanKill()
 }
 
-func (g *Game) canAct(player *domain.Player) bool {
+func (g *Game) canAct(player *Player) bool {
 	return player.IsInDungeon() && player.IsAlive()
 }
 
-func (g *Game) reject(event domain.Event, invalid bool) bool {
+func (g *Game) reject(event Event, invalid bool) bool {
 	if invalid {
 		g.impossible(event)
 		return true

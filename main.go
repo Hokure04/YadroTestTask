@@ -2,9 +2,6 @@ package main
 
 import (
 	"fmt"
-	"impulse/internal/config"
-	"impulse/internal/engine"
-	"impulse/internal/parser"
 	"os"
 )
 
@@ -20,19 +17,19 @@ func main() {
 		eventsPath = os.Args[2]
 	}
 
-	cfg, err := config.Read(configPath)
+	cfg, err := Read(configPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "config error:", err)
 		os.Exit(1)
 	}
 
-	events, err := parser.ReadEvents(eventsPath)
+	events, err := ReadEvents(eventsPath)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "events error:", err)
 		os.Exit(1)
 	}
 
-	game, err := engine.NewGame(cfg)
+	game, err := NewGame(cfg)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "new game error:", err)
 		os.Exit(1)

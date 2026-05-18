@@ -1,17 +1,16 @@
-package tests
+package main
 
 import (
-	"impulse/internal/domain"
 	"testing"
 )
 
 func TestDungeonCloseByTime(t *testing.T) {
 	game := newTestGame(t)
 
-	events := []domain.Event{
-		event(t, "14:00:00", 1, domain.Register),
-		event(t, "14:10:00", 1, domain.EnterDungeon),
-		event(t, "16:10:00", 1, domain.KillMonster),
+	events := []Event{
+		event(t, "14:00:00", 1, Register),
+		event(t, "14:10:00", 1, EnterDungeon),
+		event(t, "16:10:00", 1, KillMonster),
 	}
 
 	runEvents(game, events)

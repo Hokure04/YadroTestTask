@@ -1,32 +1,29 @@
-package tests
+package main
 
 import (
-	"impulse/internal/config"
-	"impulse/internal/domain"
-	"impulse/internal/engine"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
 )
 
-func newTestGame(t *testing.T) *engine.Game {
+func newTestGame(t *testing.T) *Game {
 	t.Helper()
-	cfg := config.Config{
+	cfg := Config{
 		Floors:   2,
 		Monsters: 2,
 		OpenAt:   "14:00:00",
 		Duration: 2,
 	}
 
-	game, err := engine.NewGame(cfg)
+	game, err := NewGame(cfg)
 	if err != nil {
 		t.Fatalf("error while creating game: %v", err)
 	}
 	return game
 }
 
-func runEvents(game *engine.Game, events []domain.Event) {
+func runEvents(game *Game, events []Event) {
 	for _, event := range events {
 		game.CloseExpiredDungeons(event.TimeEventHappen)
 		game.ProcessEvent(event)
@@ -34,14 +31,14 @@ func runEvents(game *engine.Game, events []domain.Event) {
 	game.FinishOpenRuns()
 }
 
-func event(t *testing.T, timeText string, playerId int, eventId int, extraParam ...string) domain.Event {
+func event(t *testing.T, timeText string, playerId int, eventId int, extraParam ...string) Event {
 	t.Helper()
 	parsedTime, err := time.Parse("15:04:05", timeText)
 	if err != nil {
 		t.Fatalf("error while parsing time %s: %v", timeText, err)
 	}
 
-	return domain.Event{
+	return Event{
 		TimeEventHappen: parsedTime,
 		PlayerID:        playerId,
 		EventID:         eventId,
